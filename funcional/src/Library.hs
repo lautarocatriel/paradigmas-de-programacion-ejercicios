@@ -171,3 +171,70 @@ incrementMcuadradoN numero incremento = ((+ incremento) . (^2)) numero
 
 esResultadoPar :: Number -> Number -> Bool
 esResultadoPar numero potencia = (even . (^potencia)) numero
+
+
+
+--TUPLAS
+
+-- Definir las funciones fst3, snd3, trd3, que dada una tupla de 3 elementos devuelva el elemento correspondiente, p.ej. 
+-- Main> snd3 (4,5,6) 
+-- 5
+-- Main> trd3(4,5,6)
+-- 6
+
+numeros :: (Number, Number, Number)
+numeros = (4,5,6)
+
+fst3 :: (Number, Number, Number) -> Number
+fst3 (numero, numero2, numero3) = numero
+
+snd3 :: (Number, Number, Number) -> Number
+snd3 (numero, numero2, numero3) = numero2
+
+
+trd3 :: (Number, Number, Number) -> Number
+trd3 (numero, numero2, numero3) = numero3
+
+-- Definir la función aplicar, que recibe como argumento una tupla de 2 elementos con funciones y un entero, me devuelve como resultado una tupla con el resultado de aplicar el elemento a cada una de la funciones, ej: 
+-- Main> aplicar (doble,triple) 8 
+-- (16,24) 
+-- Main> aplicar ((3+),(2*)) 8 
+-- (11,16)
+
+aplicar :: (Number -> Number, Number-> Number) -> Number -> (Number, Number)
+aplicar (funcion, funcion2) numero = (funcion numero, funcion2 numero)
+
+-- Definir la función cuentaBizarra, que recibe un par y: si el primer elemento es mayor al segundo devuelve la suma, si el segundo le lleva más de 10 al primero devuelve la resta 2do – 1ro, y si el segundo es más grande que el 1ro pero no llega a llevarle 10, devuelve el producto. Ej: 
+-- Main> cuentaBizarra (5,8)
+-- 40
+-- Main> cuentaBizarra (8,5)
+-- 13
+-- Main> cuentaBizarra (5,29)
+-- 24
+
+cuentaBizarra :: (Number, Number) -> Number
+cuentaBizarra (numero, otro)
+ | numero > otro = numero + otro
+ | (otro - numero) >= 10 = otro - numero
+ | (((otro - numero < 10)==) . (>numero)) otro = numero * otro
+
+
+--  Representamos las notas que se sacó un alumno en dos parciales mediante un par (nota1,nota2), p.ej. un patito en el 1ro y un 7 en el 2do se representan mediante el par (2,7). 
+-- A partir de esto: 
+-- Definir la función esNotaBochazo, recibe un número y devuelve True si no llega a 6, False en caso contrario. No vale usar guardas. 
+-- Definir la función aprobo, recibe un par e indica si una persona que se sacó esas notas aprueba. Usar esNotaBochazo. 
+-- Definir la función promociono, que indica si promocionó, para eso tiene las dos notas tienen que sumar al menos 15 y además haberse sacado al menos 7 en cada parcial. 
+-- Escribir una consulta que dado un par indica si aprobó el primer parcial, usando esNotaBochazo y composición. La consulta tiene que tener esta forma (p.ej. para el par de notas (5,8)) 
+-- Main> (... algo ...) (5,8)
+
+type Notas = (Number,Number)
+
+esNotaBochazo :: Number -> Bool
+esNotaBochazo numero = numero < 6
+
+aprobo :: Notas -> Bool
+aprobo (nota1, nota2) = (not . esNotaBochazo) nota1 && (not . esNotaBochazo) nota2
+
+promociono :: Notas -> Bool
+promociono (nota1, nota2) = (((nota1 + nota2 >= 15) &&) . ((nota1 >= 7)==)) (nota2 >=7)
+
