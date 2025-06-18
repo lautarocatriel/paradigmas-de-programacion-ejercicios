@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use second" #-}
 {-# HLINT ignore "Use first" #-}
+{-# HLINT ignore "Use section" #-}
 module Library where
 import PdePreludat
 
@@ -270,7 +271,7 @@ recupero :: (Number, Number) -> Bool
 recupero notas = fst notas > (-1) || snd notas > (-1)
 
 recuperoDeGusto :: ((Number, Number), (Number, Number)) -> Bool
-recuperoDeGusto notas = (((promociono . fst )notas==) . (recupero . snd)) notas
+recuperoDeGusto notas = (((promociono . fst ) notas==) . (recupero . snd)) notas
 
 -- Definir la función esMayorDeEdad, que dada una tupla de 2 elementos (persona, edad) me devuelva True si es mayor de 21 años y False en caso contrario. Por Ej:.
 -- Main> esMayorDeEdad (juan,18) 
@@ -290,7 +291,7 @@ esMayorDeEdad  =  (>21) . snd
 -- esParCalcular numero
 --  | even numero = numero * 2
 --  |otherwise = numero
- 
+
 -- esImparCalcular :: Number -> Number
 -- esImparCalcular numero 
 --  |odd numero = numero + 1
@@ -304,3 +305,160 @@ calcular notas
  |(odd. snd) notas = (fst notas, ((+1) . snd) notas)
 
 
+--LISTAS + ORDEN SUPERIOR
+
+-- Definir una función que sume una lista de números. 
+-- Nota: Investigar sum 
+
+sumarLista :: [Number] -> Number
+sumarLista = sum
+
+-- Durante un entrenamiento físico de una hora, cada 10 minutos de entrenamiento se tomóo la frecuencia cardíaca de uno de los participantes obteniéndose un total de 7 muestras que son las siguientes:
+-- frecuenciaCardiaca = [80, 100, 120, 128, 130, 123, 125] 
+-- Comienza con un frecuencia de 80 min 0. 
+-- A los 10 min la frecuencia alcanza los 100 
+-- A los 20 min la frecuencia es de 120, 
+-- A los 30 min la frecuencia es de 128
+-- A los 40 min la frecuencia es de 130, …etc.. 
+-- A los 60 min la frecuencia es de 125 frecuenciaCardiaca es un función constante. 
+-- Definir la función promedioFrecuenciaCardiaca, que devuelve el promedio de la frecuencia cardíaca. 
+-- Main> promedioFrecuenciaCardiaca 
+-- 115.285714285714
+-- Definir la función frecuenciaCardiacaMinuto/1, que recibe m que es el minuto en el cual quiero conocer la frecuencia cardíaca, m puede ser a los 10, 20, 30 ,40,..hasta 60. 
+-- Main> frecuenciaCardiacaMomento 30 
+-- 128 
+-- Ayuda: Vale definir una función auxiliar para conocer el número de muestra. 
+-- Definir la función frecuenciasHastaMomento/1, devuelve el total de frecuencias que se obtuvieron hasta el minuto m. 
+-- Main> frecuenciasHastaMomento 30 
+-- [80, 100, 120, 128] 
+-- Ayuda: Utilizar la función take y la función auxiliar definida en el punto anterior. 
+
+frecuenciaCardiaca :: [Number]
+frecuenciaCardiaca = [80, 100, 120, 128, 130, 123, 125]
+
+promedioFrecuenciaCardiaca :: Number
+promedioFrecuenciaCardiaca = sum frecuenciaCardiaca / length frecuenciaCardiaca
+
+minutosFrecuencia :: Number -> Number
+minutosFrecuencia  numero = div numero 10
+
+frecuenciaCardiacaMinuto :: Number -> Number
+frecuenciaCardiacaMinuto   = (!!) frecuenciaCardiaca . minutosFrecuencia
+
+frecuenciasHastaMomento :: Number -> [Number] -> [Number]
+frecuenciasHastaMomento = take . (+1) . minutosFrecuencia
+
+-- Definir la función esCapicua/1, si data una lista de listas, me devuelve si la concatenación de las sublistas es una lista capicua..Ej: 
+-- Main> esCapicua ["ne", "uqu", "en"] 
+-- True 
+-- Porque “neuquen” es capicua.
+-- Ayuda: Utilizar concat/1, reverse/1. 
+
+
+esCapicua :: [[Char]] -> Bool
+esCapicua lista = (( concat lista == ) . reverse . concat) lista
+
+-- Se tiene información detallada de la duración en minutos de las llamadas que se llevaron a cabo en un período determinado, discriminadas en horario normal y horario reducido. 
+-- duracionLlamadas = (("horarioReducido",[20,10,25,15]),(“horarioNormal”,[10,5,8,2,9,10]))
+-- Definir la función cuandoHabloMasMinutos, devuelve en que horario se habló más cantidad de minutos, en el de tarifa normal o en el reducido. 
+-- Main> cuandoHabloMasMinutos 
+-- “horarioReducido” 
+-- Definir la función cuandoHizoMasLlamadas, devuelve en que franja horaria realizó más cantidad de llamadas, en el de tarifa normal o en el reducido. 
+-- Main> cuandoHizoMasLlamadas 
+-- “horarioNormal” 
+-- Nota: Utilizar composición en ambos casos 
+
+duracionLlamadas :: ((String, [Number]), (String, [Number]))
+duracionLlamadas = (("horarioReducido",[20,10,25,15]),("horarioNormal",[10,5,8,2,9,10]))
+
+cuandoHabloMasMinutos :: String
+cuandoHabloMasMinutos
+ |(sum . snd . fst) duracionLlamadas >  (sum . snd . snd) duracionLlamadas = (fst .fst) duracionLlamadas
+ |otherwise = (fst . snd) duracionLlamadas
+
+
+cuandoHizoMasLlamadas :: String
+cuandoHizoMasLlamadas
+ |(length . snd . fst) duracionLlamadas >  (length . snd . snd) duracionLlamadas = (fst .fst) duracionLlamadas
+ |otherwise = (fst . snd) duracionLlamadas
+
+
+--ORDEN SUPERIOR
+
+--  Definir la función existsAny/2, que dadas una función booleana y una tupla de tres elementos devuelve True si existe algún elemento de la tupla que haga verdadera la función. 
+-- Main> existsAny even (1,3,5) 
+-- False 
+
+-- Main> existsAny even (1,4,7) 
+-- True 
+-- porque even 4 da True 
+
+-- Main> existsAny (0>) (1,-3,7) 
+-- True 
+-- porque even -3 es negativo 
+
+existsAny :: (a-> Bool) -> (a,a,a) -> Bool
+existsAny funcion (elemento1,elemento2,elemento3) = any funcion [elemento1,elemento2,elemento3]
+
+-- Definir la función mejor/3, que recibe dos funciones y un número, y devuelve el resultado de la función que dé un valor más alto. P.ej. 
+-- Main> mejor cuadrado triple 1 
+-- 3 
+-- (pues triple 1 = 3 > 1 = cuadrado 1) 
+
+-- Main> mejor cuadrado triple 5 
+-- 25 
+-- (pues cuadrado 5 = 25 > 15 = triple 5) 
+-- Nota: No olvidar la función max. 
+
+cuadrado :: Number -> Number
+cuadrado = (^2)
+
+mejor :: (Number -> Number) -> (Number -> Number) -> Number -> Number
+mejor funcion funcion2 numero = (max (funcion numero) . funcion2 ) numero
+
+-- Definir la función aplicarPar/2, que recibe una función y un par, y devuelve el par que resulta de aplicar la función a los elementos del par. P.ej. 
+-- Main> aplicarPar doble (3,12) 
+-- (6,24) 
+
+-- Main> aplicarPar even (3,12) 
+-- (False, True) 
+
+-- Main> aplicarPar (even . doble) (3,12) 
+-- (True, True) 
+
+doble :: Number -> Number
+doble = (*2)
+
+aplicarPar :: (a -> b) -> (a, a) -> (b, b)
+aplicarPar funcion (elemento1, elemento2) = (funcion elemento1, funcion elemento2)
+
+-- Definir la función parDeFns/3, que recibe dos funciones y un valor, y devuelve un par ordenado que es el resultado de aplicar las dos funciones al valor. P.ej. 
+-- Main> parDeFns even doble 12 
+-- (True, 24) 
+
+parDeFns :: (a -> b) -> (a -> c) -> a -> (b, c)
+parDeFns funcion1 funcion2 valor = (funcion1 valor, funcion2 valor)
+
+
+--ORDEN SUPERIOR + LISTAS
+
+-- Definir la función esMultiploDeAlguno/2, que recibe un número y una lista y devuelve True si el número es múltiplo de alguno de los números de la lista. P.ej. 
+-- Main> esMultiploDeAlguno 15 [2,3,4] 
+-- True, 
+-- porque 15 es múltiplo de 3 
+
+-- Main> esMultiploDeAlguno 34 [3,4,5] 
+-- False 
+-- porque 34 no es múltiplo de ninguno de los 3 Nota: Utilizar la función any/2. 
+
+esMultiploDeAlguno :: Number -> [Number] -> Bool
+esMultiploDeAlguno numero = any (flip esMultiploDe numero) 
+
+
+-- Armar una función promedios/1, que dada una lista de listas me devuelve la lista de los promedios de cada lista-elemento. P.ej. 
+-- Main> promedios [[8,6],[7,9,4],[6,2,4],[9,6]] 
+-- [7,6.67,4,7.5] 
+-- Nota: Implementar una solución utilizando map/2. 
+
+-- promedios :: [[Number]] -> [Number]
+-- promedios listaDeListas = 
